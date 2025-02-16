@@ -88,3 +88,18 @@ Adjust as needed for your development workflow.
 - 21st.dev for future UI expansions and design inspiration.
 - Bandit, Black, and Flake8 for code quality and security.
 - The open-source community for making zero-dollar startups possible.
+
+## Pricing Model and Roadmap Overview
+
+Our pricing model is designed to scale with your needs while ensuring complete data security through 100% local processing. Our tiers include:
+
+- **Freemium Trial:** A 14- to 30-day trial with 300 minutes of transcription, allowing you to experience the core functionality without any commitment.
+- **Base Plan (Individual):** $15 per user per month for approximately 500 minutes of transcription. Overage fees apply at $0.25 per additional minute.
+- **Plus Plan (Small Teams):** $12.99 per user per month for teams up to 10 members, with a pooled allocation of around 3,000 minutes. Overage fees are $0.20 per extra minute.
+- **Advanced Plan (Mid-Market Teams):** $10 per user per month for teams with 11-25 users, with a pooled allocation of 7,500–10,000 minutes. Overage fees are $0.15 per extra minute.
+- **Enterprise Plan (Large Organizations):** Custom pricing for 25+ users, including unlimited or high-volume usage bundles, advanced integrations, dedicated support, and additional features.
+
+**Data Security Commitment:**  
+All processing is performed locally on your machine. Audio capture (via PyAudio), transcription (via Vosk/Whisper), summarization (via RAKE or locally-run LLMs), and even logging are designed to ensure that no data is transmitted externally. This local-first approach guarantees the highest level of data security and privacy for business consumers.
+
+This roadmap and pricing model are continuously refined based on user feedback and market trends.
