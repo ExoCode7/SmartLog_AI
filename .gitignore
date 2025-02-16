@@ -1,0 +1,60 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Compiled files
+*.com
+*.dll
+*.exe
+*.o
+*.obj
+*.so
+*.dylib
+
+# Distribution / packaging
+.Python
+env/
+venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/cache
+pip-wheel-metadata/
+*.egg-info/
+.installed.cfg
+*.whl
+*.ipa
+*.apk
+*.app
+
+# Log and temp files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.DS_Store
+
+# Conda environment
+environment.yml
+spec-file.txt
+
+# IDE / Editor
+.idea/
+.vscode/
+*.sublime-*
+
+# Jupyter Notebook
+.ipynb_checkpoints 

@@ -1,0 +1,12 @@
+name: smartlog-ai-mvp
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - tk=8.6.14
+  - pip:
+      - pyaudio==0.2.14
+      - vosk==0.3.44
+      - pre-commit==3.3.3
