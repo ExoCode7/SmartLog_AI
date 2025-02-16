@@ -18,4 +18,4 @@ RUN conda env create -f conda.yml
 COPY . /app
 
 # We'll define the final entrypoint in later phases, e.g.,
-# CMD ["python", "src/main_mvp.py"] 
+# CMD ["python", "src/main_mvp.py"]
