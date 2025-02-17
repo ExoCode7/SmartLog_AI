@@ -19,17 +19,18 @@ class RingBuffer:
             if len(data) > self.size:
                 raise ValueError("Data too large for buffer.")
             for byte in data:
-                self.buf[self.head] = byte
-                self.head = (self.head + 1) % self.size
-                # Overwrite if full
-                if self.head == self.tail:
+                next_head = (self.head + 1) % self.size
+                # If next_head == self.tail, that means the buffer was full before writing this byte
+                if next_head == self.tail:
                     self.tail = (self.tail + 1) % self.size
                     self.overwrites += 1
-                    if self.overwrites % 100 == 0:  # Log every 100 overwrites
+                    if self.overwrites % 100 == 0:
                         logger.warning(
                             "RingBuffer: Data overwritten (overwrites: %d)",
                             self.overwrites,
                         )
+                self.buf[self.head] = byte
+                self.head = next_head
 
     def read(self, length: int) -> bytes:
         with self.lock:
