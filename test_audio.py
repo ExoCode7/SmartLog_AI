@@ -13,3 +13,10 @@ try:
     print("Vosk imported successfully!")
 except ImportError:
     print("Vosk NOT installed or import failed!", file=sys.stderr)
+
+def test_audio_placeholder():
+    """
+    Placeholder test for audio module. 
+    Actual PyAudio usage not tested yet.
+    """
+    assert True  # or use pass
