@@ -1,22 +1,6 @@
-import sys
-
-try:
-    import pyaudio
-
-    print("PyAudio imported successfully!")
-except ImportError:
-    print("PyAudio NOT installed or import failed!", file=sys.stderr)
-
-try:
-    import vosk
-
-    print("Vosk imported successfully!")
-except ImportError:
-    print("Vosk NOT installed or import failed!", file=sys.stderr)
-
 def test_audio_placeholder():
     """
-    Placeholder test for audio module. 
-    Actual PyAudio usage not tested yet.
+    Placeholder test for audio module.
+    We'll add real tests later.
     """
-    assert True  # or use pass
+    pass

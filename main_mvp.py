@@ -1,4 +1,4 @@
-import sys  # or any other used import
+# Remove sys import if not used
 from src.gui.ui_tk import MinimalUI
 
 
