@@ -93,13 +93,15 @@ Adjust as needed for your development workflow.
 
 Our pricing model is designed to scale with your needs while ensuring complete data security through 100% local processing. Our tiers include:
 
-- **Freemium Trial:** A 14- to 30-day trial with 300 minutes of transcription, allowing you to experience the core functionality without any commitment.
-- **Base Plan (Individual):** $15 per user per month for approximately 500 minutes of transcription. Overage fees apply at $0.25 per additional minute.
-- **Plus Plan (Small Teams):** $12.99 per user per month for teams up to 10 members, with a pooled allocation of around 3,000 minutes. Overage fees are $0.20 per extra minute.
-- **Advanced Plan (Mid-Market Teams):** $10 per user per month for teams with 11-25 users, with a pooled allocation of 7,500–10,000 minutes. Overage fees are $0.15 per extra minute.
-- **Enterprise Plan (Large Organizations):** Custom pricing for 25+ users, including unlimited or high-volume usage bundles, advanced integrations, dedicated support, and additional features.
+- **Freemium Trial:** 14- to 30-day trial with 300 minutes of transcription
+- **Base Plan (Individual):** $15/month for ~500 minutes
+- **Plus Plan (Small Teams):** $12.99/user/month (pooled minutes)
+- **Advanced Plan (Mid-Market):** $10/user/month (larger pooled minutes)
+- **Enterprise:** Custom pricing for large orgs
 
 **Data Security Commitment:**
-All processing is performed locally on your machine. Audio capture (via PyAudio), transcription (via Vosk/Whisper), summarization (via RAKE or locally-run LLMs), and even logging are designed to ensure that no data is transmitted externally. This local-first approach guarantees the highest level of data security and privacy for business consumers.
+All processing is performed locally on your machine. Audio capture (PyAudio), transcription (Vosk/Whisper), summarization (RAKE/LLM), and logging remain offline. This ensures your data never leaves the device.
 
-This roadmap and pricing model are continuously refined based on user feedback and market trends.
+## Additional Documentation
+
+See [src/ai/stt_engine.py](src/ai/stt_engine.py) for HybridSTTEngine logic, [src/utils/power.py](src/utils/power.py) for thermal management, and [src/utils/logger.py](src/utils/logger.py) for data-safe logging.
