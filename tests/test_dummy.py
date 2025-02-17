@@ -1,2 +1,3 @@
 def test_dummy():
-    assert True
+    # Replace assert True with a no-op or a real test
+    pass
