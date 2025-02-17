@@ -5,8 +5,11 @@ import queue
 import vosk
 import json
 
+
 class AudioCapture:
-    def __init__(self, device_index=None, sample_rate=16000, chunk_size=1024, buffer_size=4):
+    def __init__(
+        self, device_index=None, sample_rate=16000, chunk_size=1024, buffer_size=4
+    ):
         """
         Captures audio in a separate thread, storing chunks in a queue.
         device_index: Optional index of audio input device (None = default).
@@ -33,12 +36,14 @@ class AudioCapture:
                 rate=self.sample_rate,
                 input=True,
                 input_device_index=self.device_index,
-                frames_per_buffer=self.chunk_size
+                frames_per_buffer=self.chunk_size,
             )
             self.logger.info("Audio capture started.")
             while self.running:
                 with self.lock:
-                    data = self.stream.read(self.chunk_size, exception_on_overflow=False)
+                    data = self.stream.read(
+                        self.chunk_size, exception_on_overflow=False
+                    )
                 self.frames.put(data)
         except Exception as e:
             self.logger.error(f"Error during audio capture: {e}")
@@ -52,7 +57,9 @@ class AudioCapture:
         """Starts capturing audio in a daemon thread."""
         if not self.running:
             self.running = True
-            self.capture_thread = threading.Thread(target=self._capture_audio, daemon=True)
+            self.capture_thread = threading.Thread(
+                target=self._capture_audio, daemon=True
+            )
             self.capture_thread.start()
         else:
             self.logger.warning("Audio capture already running.")
@@ -81,6 +88,7 @@ class AudioCapture:
             self.stop_capture()
             self.p.terminate()
             self.logger.info("PyAudio terminated.")
+
 
 class VoskTranscriber:
     def __init__(self, model_path="model", sample_rate=16000):
@@ -121,4 +129,4 @@ class VoskTranscriber:
             return result_dict.get("text", "")
         except Exception as e:
             self.logger.error(f"Error getting final result: {e}")
-            return "" 
+            return ""

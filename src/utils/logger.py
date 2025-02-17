@@ -1,9 +1,11 @@
 import logging
 
+
 class SensitiveDataFilter(logging.Filter):
     """
     Filters out potentially sensitive information from log messages.
     """
+
     def filter(self, record):
         # Redact messages containing sensitive keywords
         sensitive_keywords = ["transcription:", "audio chunk:", "keywords:"]
@@ -12,6 +14,7 @@ class SensitiveDataFilter(logging.Filter):
             record.msg = "REDACTED: Sensitive data omitted."
             record.args = ()
         return True
+
 
 def setup_logger():
     logger = logging.getLogger()  # Root logger
@@ -26,7 +29,9 @@ def setup_logger():
     console_handler.setLevel(logging.INFO)
 
     # Formatter
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
 
@@ -38,6 +43,7 @@ def setup_logger():
     logger.addFilter(SensitiveDataFilter())
     return logger
 
+
 if __name__ == "__main__":
     logger = setup_logger()
-    logger.info("Logger initialized with sensitive data filtering.") 
+    logger.info("Logger initialized with sensitive data filtering.")

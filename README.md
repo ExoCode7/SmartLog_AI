@@ -99,7 +99,7 @@ Our pricing model is designed to scale with your needs while ensuring complete d
 - **Advanced Plan (Mid-Market Teams):** $10 per user per month for teams with 11-25 users, with a pooled allocation of 7,500–10,000 minutes. Overage fees are $0.15 per extra minute.
 - **Enterprise Plan (Large Organizations):** Custom pricing for 25+ users, including unlimited or high-volume usage bundles, advanced integrations, dedicated support, and additional features.
 
-**Data Security Commitment:**  
+**Data Security Commitment:**
 All processing is performed locally on your machine. Audio capture (via PyAudio), transcription (via Vosk/Whisper), summarization (via RAKE or locally-run LLMs), and even logging are designed to ensure that no data is transmitted externally. This local-first approach guarantees the highest level of data security and privacy for business consumers.
 
 This roadmap and pricing model are continuously refined based on user feedback and market trends.

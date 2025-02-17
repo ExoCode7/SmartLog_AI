@@ -3,20 +3,22 @@ import logging.config
 import time
 from audio import AudioCapture, VoskTranscriber
 
-def setup_logging(default_path='logging.ini', default_level=logging.INFO):
+
+def setup_logging(default_path="logging.ini", default_level=logging.INFO):
     try:
-        with open(default_path, 'rt') as f:
+        with open(default_path, "rt") as f:
             logging.config.fileConfig(f, disable_existing_loggers=False)
     except Exception as e:
         print(f"Error in Logging Configuration. Using default configs: {e}")
         logging.basicConfig(level=default_level)
+
 
 def main():
     setup_logging()
     logger = logging.getLogger(__name__)
 
     MODEL_PATH = "model"  # Adjust if needed
-    SAMPLE_RATE = 16000   # Must match your Vosk model
+    SAMPLE_RATE = 16000  # Must match your Vosk model
 
     audio_capture = None
     try:
@@ -43,5 +45,6 @@ def main():
             audio_capture.close()
         logger.info("Exiting main_mvp.")
 
+
 if __name__ == "__main__":
-    main() 
+    main()

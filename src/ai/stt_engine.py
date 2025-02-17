@@ -8,4 +8,4 @@ class HybridSTTEngine:
         Placeholder method for Phase 1.
         Will be replaced by actual STT logic in Phase 2.
         """
-        return "Transcription not implemented yet." 
+        return "Transcription not implemented yet."
