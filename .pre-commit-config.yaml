@@ -21,3 +21,12 @@ repos:
     rev: 6.0.0
     hooks:
       - id: flake8
+
+  - repo: local
+    hooks:
+      - id: clear-everything
+        name: Clear Everything
+        entry: ./scripts/clear_everything.sh
+        language: script
+        pass_filenames: false
+        stages: [manual]
