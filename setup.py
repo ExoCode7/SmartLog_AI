@@ -6,7 +6,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
-        "vosk==0.3.45",
+        "vosk==0.3.44",
         "pyaudio==0.2.14",
         "rake-nltk==1.0.6",
         "psutil==5.9.5",
