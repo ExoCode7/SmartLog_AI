@@ -76,7 +76,8 @@ class AudioCapture:
             self.logger.warning("Audio capture not running.")
 
     def get_audio_data(self):
-        """Retrieves one chunk of audio data (non-blocking). Returns None if queue is empty."""
+        """Retrieves one chunk of audio data (non-blocking).
+        Returns None if queue is empty."""
         try:
             return self.frames.get_nowait()
         except queue.Empty:
@@ -107,7 +108,8 @@ class VoskTranscriber:
             raise
 
     def transcribe(self, audio_data):
-        """Feeds audio_data to the recognizer. Returns full text if a segment is done, else partial text."""
+        """Feeds audio_data to the recognizer.
+        Returns full text if a segment is done, else partial text."""
         try:
             if self.rec.AcceptWaveform(audio_data):
                 result = self.rec.Result()
