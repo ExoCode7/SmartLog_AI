@@ -13,19 +13,23 @@ def main():
     audio = AudioCapturer()
     stt_engine = HybridSTTEngine()
     summarizer = KeywordEngine()
-    ui = LiveTranscriptionUI()
+
+    def start_capture():
+        audio.start()
+
+    def stop_capture():
+        audio.stop()
+
+    ui = LiveTranscriptionUI(start_callback=start_capture, stop_callback=stop_capture)
 
     try:
-        audio.start()
         while True:
-            audio_chunk = audio.get_chunk()  # get audio from ring buffer
+            audio_chunk = audio.get_chunk()
             if not audio_chunk:
                 continue
-
             transcription = stt_engine.transcribe(audio_chunk)
             keywords = summarizer.extract_keywords(transcription)
             ui.update_display(transcription, keywords)
-
     except KeyboardInterrupt:
         log.info("Received KeyboardInterrupt, shutting down gracefully.")
     except Exception as e:
