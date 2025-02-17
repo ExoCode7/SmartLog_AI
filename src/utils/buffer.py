@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class RingBuffer:
     def __init__(self, size: int):
         self.size = size
@@ -24,8 +25,11 @@ class RingBuffer:
                 if self.head == self.tail:
                     self.tail = (self.tail + 1) % self.size
                     self.overwrites += 1
-                    if self.overwrites % 100 == 0: # Log every 100 overwrites
-                        logger.warning("RingBuffer: Data overwritten (overwrites: %d)", self.overwrites)
+                    if self.overwrites % 100 == 0:  # Log every 100 overwrites
+                        logger.warning(
+                            "RingBuffer: Data overwritten (overwrites: %d)",
+                            self.overwrites,
+                        )
 
     def read(self, length: int) -> bytes:
         with self.lock:
@@ -36,4 +40,4 @@ class RingBuffer:
             for _ in range(length):
                 data.append(self.buf[self.tail])
                 self.tail = (self.tail + 1) % self.size
-            return bytes(data) 
+            return bytes(data)

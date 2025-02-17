@@ -4,11 +4,12 @@ from typing import List, Dict, Optional, Any
 
 # Attempt to download data if not present
 try:
-    nltk.data.find('tokenizers/punkt')
-    nltk.data.find('corpora/stopwords')
+    nltk.data.find("tokenizers/punkt")
+    nltk.data.find("corpora/stopwords")
 except LookupError:
-    nltk.download('punkt')
-    nltk.download('stopwords')
+    nltk.download("punkt")
+    nltk.download("stopwords")
+
 
 class KeywordEngine:
     def __init__(self, max_keywords: int = 5):
@@ -19,7 +20,9 @@ class KeywordEngine:
         if not text.strip():
             return []
         self.rake.extract_keywords_from_text(text)
-        return self.rake.get_ranked_phrases()[:self.max_keywords]
+        return self.rake.get_ranked_phrases()[: self.max_keywords]
 
-    def apply_user_guidance(self, keywords: List[str], instructions: Optional[Dict[str, Any]]) -> List[str]:
+    def apply_user_guidance(
+        self, keywords: List[str], instructions: Optional[Dict[str, Any]]
+    ) -> List[str]:
         return keywords

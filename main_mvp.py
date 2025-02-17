@@ -6,6 +6,7 @@ from src.audio.capture import AudioCapturer
 from src.ai.stt_engine import HybridSTTEngine
 from src.ai.summarization import KeywordEngine
 
+
 def main():
     log = setup_logger()
     log.info("Starting SmartLog AI MVP (Phase 2/3)")
@@ -39,6 +40,7 @@ def main():
         log.info("Stopping audio capture.")
         audio.stop()
         sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

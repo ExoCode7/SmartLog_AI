@@ -58,3 +58,10 @@ spec-file.txt
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store

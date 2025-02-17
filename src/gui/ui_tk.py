@@ -4,7 +4,11 @@ from typing import List, Callable
 
 
 class LiveTranscriptionUI:
-    def __init__(self, start_callback: Callable[[], None] = None, stop_callback: Callable[[], None] = None):
+    def __init__(
+        self,
+        start_callback: Callable[[], None] = None,
+        stop_callback: Callable[[], None] = None,
+    ):
         self.root = tk.Tk()
         self.root.title("SmartLog AI")
         self.root.geometry("800x600")
@@ -12,7 +16,9 @@ class LiveTranscriptionUI:
         self.start_callback = start_callback
         self.stop_callback = stop_callback
 
-        self.text_area = scrolledtext.ScrolledText(self.root, height=20, width=80, wrap=tk.WORD, state=tk.DISABLED)
+        self.text_area = scrolledtext.ScrolledText(
+            self.root, height=20, width=80, wrap=tk.WORD, state=tk.DISABLED
+        )
         self.text_area.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
         self.keyword_label = tk.Label(self.root, text="Keywords: ", font=("Arial", 12))
@@ -22,14 +28,20 @@ class LiveTranscriptionUI:
         button_frame = tk.Frame(self.root)
         button_frame.pack(padx=10, pady=5)
 
-        self.start_button = tk.Button(button_frame, text="Start Capture", command=self.on_start)
+        self.start_button = tk.Button(
+            button_frame, text="Start Capture", command=self.on_start
+        )
         self.start_button.pack(side=tk.LEFT, padx=5)
 
-        self.stop_button = tk.Button(button_frame, text="Stop Capture", command=self.on_stop)
+        self.stop_button = tk.Button(
+            button_frame, text="Stop Capture", command=self.on_stop
+        )
         self.stop_button.pack(side=tk.LEFT, padx=5)
 
         # User Guidance Placeholders
-        self.instructions_label = tk.Label(self.root, text="Note-Taking Instructions (Future Feature):")
+        self.instructions_label = tk.Label(
+            self.root, text="Note-Taking Instructions (Future Feature):"
+        )
         self.instructions_label.pack(padx=10, pady=2)
 
         self.instructions_entry = ttk.Entry(self.root, width=50)
@@ -38,7 +50,11 @@ class LiveTranscriptionUI:
         self.style_label = tk.Label(self.root, text="Note-Taking Style:")
         self.style_label.pack(padx=10, pady=2)
 
-        self.style_combo = ttk.Combobox(self.root, values=["Keywords Only", "Short Summary", "Detailed Keywords"], state="readonly")
+        self.style_combo = ttk.Combobox(
+            self.root,
+            values=["Keywords Only", "Short Summary", "Detailed Keywords"],
+            state="readonly",
+        )
         self.style_combo.pack(padx=10, pady=2)
         self.style_combo.set("Keywords Only")
 

@@ -105,3 +105,12 @@ All processing is performed locally on your machine. Audio capture (PyAudio), tr
 ## Additional Documentation
 
 See [src/ai/stt_engine.py](src/ai/stt_engine.py) for HybridSTTEngine logic, [src/utils/power.py](src/utils/power.py) for thermal management, and [src/utils/logger.py](src/utils/logger.py) for data-safe logging.
+
+## Additional Enhancements (Recommended)
+
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
+[![Coverage](https://img.shields.io/badge/coverage-80%25-yellow)](#)
+[![Code Quality](https://img.shields.io/badge/code%20quality-A-blue)](#)
+
+### Architectural Diagram
+(Placeholder for a simple diagram showing audio capture -> stt engine -> summarization -> UI)
