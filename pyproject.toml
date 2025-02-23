@@ -7,4 +7,34 @@ pythonpath = ["."]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 log_cli = true
-log_cli_level = "INFO" 
+log_cli_level = "INFO"
+markers = [
+    "unit: marks unit tests",
+    "integration: marks integration tests",
+    "slow: marks slow tests"
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+addopts = "-v --mock"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["F401", "F841"]
+exclude = ["tests/*"]
+per-file-ignores = [
+    "tests/*:F401,F841,E402"
+]

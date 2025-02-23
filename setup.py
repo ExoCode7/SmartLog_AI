@@ -12,4 +12,4 @@ setup(
         "psutil==5.9.5",
         # Add other pinned dependencies from requirements.txt as needed
     ],
-) 
+)

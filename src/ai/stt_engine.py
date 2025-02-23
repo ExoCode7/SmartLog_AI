@@ -31,7 +31,7 @@ class HybridSTTEngine:
     ):
         self.active_engine = "vosk" if not force_engine else force_engine
         logger.info(
-            f"Initializing HybridSTTEngine with active_engine={self.active_engine}"
+            "Initializing HybridSTTEngine with " f"active_engine={self.active_engine}"
         )
 
         self.vosk_model = VoskModel(vosk_model_path)
@@ -53,7 +53,7 @@ class HybridSTTEngine:
     def _load_whisper_if_forced(self):
         if self.active_engine == "whisper":
             logger.info(
-                "Force-engine is set to whisper, attempting to load Whisper now."
+                "Force-engine is set to whisper, " "attempting to load Whisper now."
             )
             self._load_whisper()
 
@@ -125,23 +125,17 @@ class HybridSTTEngine:
 
         cpu_percent = psutil.cpu_percent()
         virtual_mem = psutil.virtual_memory()
-        logger.debug(
-            f"Resource usage => CPU: {cpu_percent}%, MEM: {virtual_mem.percent}%"
-        )
 
-        if cpu_percent > 85 or virtual_mem.percent > 85:
-            if self.active_engine == "whisper":
-                logger.info("High resource usage detected, switching to Vosk.")
-                self.unload_whisper()
-                self.active_engine = "vosk"
-                self.last_switch_time = current_time
-        else:
-            # Potentially switch to whisper if not forced otherwise
-            logger.debug(
-                "Resource usage is moderate, no forced switch to whisper here."
+        # Use the variables for resource monitoring
+        if cpu_percent > 80 or virtual_mem.percent > 90:
+            logger.warning(
+                "High resource usage: "
+                f"CPU {cpu_percent}%, "
+                f"Memory {virtual_mem.percent}%"
             )
-            # Could add logic if you want to switch automatically to whisper
-            pass
+            if self.active_engine == "whisper":
+                self.active_engine = "vosk"
+                self.unload_whisper()
 
     def _get_optimal_threads(self) -> int:
         return psutil.cpu_count(logical=False)

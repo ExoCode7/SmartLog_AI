@@ -25,7 +25,7 @@ class AudioCapture:
         self.stream = None
         self.frames = queue.Queue(maxsize=buffer_size)  # Thread-safe queue
         self.running = False
-        self.capture_thread = None
+        self.capture_thread = threading.Thread(target=self._capture_audio, daemon=True)
         self.lock = threading.Lock()
 
     def _capture_audio(self):
@@ -57,9 +57,6 @@ class AudioCapture:
         """Starts capturing audio in a daemon thread."""
         if not self.running:
             self.running = True
-            self.capture_thread = threading.Thread(
-                target=self._capture_audio, daemon=True
-            )
             self.capture_thread.start()
         else:
             self.logger.warning("Audio capture already running.")
@@ -69,7 +66,7 @@ class AudioCapture:
         if self.running:
             with self.lock:
                 self.running = False
-            if self.capture_thread:
+            if self.capture_thread.is_alive():
                 self.capture_thread.join()
             self.logger.info("Audio capture thread joined.")
         else:

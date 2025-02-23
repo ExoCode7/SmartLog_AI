@@ -1,7 +1,7 @@
 import pyaudio
 import threading
 import logging
-import time
+import time  # noqa: F401
 from src.utils.buffer import RingBuffer
 
 logger = logging.getLogger(__name__)
@@ -71,7 +71,10 @@ class AudioCapturer:
         logger.info("Stopping audio capture.")
         self._running = False
         if self._capture_thread and self._capture_thread.is_alive():
+            start_time = time.time()
             self._capture_thread.join(timeout=2.0)
+            if time.time() - start_time >= 2.0:
+                logger.warning("Thread join timed out")
         if self.stream:
             self.stream.stop_stream()
             self.stream.close()

@@ -16,4 +16,4 @@ conda clean --all --yes
 echo "Purging pip cache..."
 pip cache purge
 
-echo "All caches cleared!" 
+echo "All caches cleared!"

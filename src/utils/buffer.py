@@ -20,7 +20,8 @@ class RingBuffer:
                 raise ValueError("Data too large for buffer.")
             for byte in data:
                 next_head = (self.head + 1) % self.size
-                # If next_head == self.tail, that means the buffer was full before writing this byte
+                # If next_head == self.tail, that means the buffer was full
+                # before writing this byte
                 if next_head == self.tail:
                     self.tail = (self.tail + 1) % self.size
                     self.overwrites += 1
@@ -36,7 +37,14 @@ class RingBuffer:
         with self.lock:
             available = (self.head - self.tail) % self.size
             if length > available:
-                length = available
+                # If requesting more than available, pad with zeros
+                data = bytearray()
+                for _ in range(available):
+                    data.append(self.buf[self.tail])
+                    self.tail = (self.tail + 1) % self.size
+                # Pad remaining length with zeros
+                data.extend([0] * (length - available))
+                return bytes(data)
             data = bytearray()
             for _ in range(length):
                 data.append(self.buf[self.tail])
