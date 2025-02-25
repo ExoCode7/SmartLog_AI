@@ -17,7 +17,7 @@ filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning",
 ]
-addopts = "-v --mock"
+addopts = "-v"
 
 [tool.coverage.run]
 source = ["src"]

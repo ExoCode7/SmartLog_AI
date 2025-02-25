@@ -26,22 +26,27 @@ def mock_whisper_model():
         yield mock_model
 
 
-def test_vosk_transcription(mock_vosk_model):
+@patch("vosk.Model")
+def test_vosk_transcription(mock_vosk, mock_vosk_model):
     engine = HybridSTTEngine(force_engine="vosk", vosk_model_path="dummy_path")
     result = engine.transcribe(b"fakeaudio")
     assert isinstance(result, str)
     assert "test" in result
 
 
-def test_whisper_transcription_minimal(mock_whisper_model):
+@patch("vosk.Model")
+def test_whisper_transcription_minimal(mock_vosk, mock_whisper_model):
     engine = HybridSTTEngine(force_engine="whisper", whisper_model_name="tiny")
     result = engine.transcribe(b"fakeaudio")
     assert isinstance(result, str)
     assert "test" in result
 
 
-@patch("psutil.cpu_percent", return_value=90)  # Simulate high CPU usage
-def test_engine_switch_cooldown(mock_cpu, mock_vosk_model, mock_whisper_model):
+@patch("vosk.Model")
+@patch("psutil.cpu_percent", return_value=90)
+def test_engine_switch_cooldown(
+    mock_cpu, mock_vosk, mock_vosk_model, mock_whisper_model
+):
     engine = HybridSTTEngine(force_engine="whisper", cooldown_time=0.5)
     assert engine.active_engine == "whisper"
     # Simulate high usage => switch to Vosk
