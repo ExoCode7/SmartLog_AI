@@ -1,28 +1,27 @@
-from rake_nltk import Rake
-import nltk
-from typing import List, Dict, Optional, Any
-
-# Attempt to download data if not present
-try:
-    nltk.data.find("tokenizers/punkt")
-    nltk.data.find("corpora/stopwords")
-except LookupError:
-    nltk.download("punkt")
-    nltk.download("stopwords")
+import spacy
+from typing import List, Dict
 
 
-class KeywordEngine:
-    def __init__(self, max_keywords: int = 5):
-        self.rake = Rake(max_length=2)
-        self.max_keywords = max_keywords
+class SpacySummarizer:
+    """
+    A summarizer that uses spaCy to extract keywords and entities.
+    """
 
-    def extract_keywords(self, text: str) -> List[str]:
-        if not text.strip():
-            return []
-        self.rake.extract_keywords_from_text(text)
-        return self.rake.get_ranked_phrases()[: self.max_keywords]
+    def __init__(self, max_items_per_category: int = 5):
+        self.nlp = spacy.load("en_core_web_sm")
+        self.max_items = max_items_per_category
 
-    def apply_user_guidance(
-        self, keywords: List[str], instructions: Optional[Dict[str, Any]]
-    ) -> List[str]:
-        return keywords
+    def summarize_conversation(self, text: str) -> Dict[str, List[str]]:
+        """
+        Summarizes the conversation by extracting keywords and entities.
+        Args:
+            text: The conversation text.
+        Returns:
+            A dictionary with 'keywords' and 'entities'.
+        """
+        doc = self.nlp(text)
+        keywords = [
+            token.text for token in doc if token.is_alpha and not token.is_stop
+        ][: self.max_items]
+        entities = [ent.text for ent in doc.ents][: self.max_items]
+        return {"keywords": keywords, "entities": entities}
