@@ -4,6 +4,7 @@ import numpy as np
 import logging
 from vosk import Model as VoskModel, KaldiRecognizer
 import whisper
+import json
 
 try:
     from whisper_cpp_py import Whisper as WhisperCpp
@@ -116,6 +117,20 @@ class HybridSTTEngine:
                 return ""
         else:
             logger.error(f"Unknown engine specified: {self.active_engine}")
+            return ""
+
+    def final_result(self) -> str:
+        """Gets the final result from the active engine when audio capture stops."""
+        logger.debug(f"Getting final result from {self.active_engine}")
+        try:
+            if self.active_engine == "vosk":
+                result = self.vosk_recognizer.FinalResult()
+                result_dict = json.loads(result)
+                return result_dict.get("text", "")
+            # Other engines don't have a concept of final result after stopping
+            return ""
+        except Exception as e:
+            logger.error(f"Error getting final result: {e}")
             return ""
 
     def _check_resources_and_switch(self):

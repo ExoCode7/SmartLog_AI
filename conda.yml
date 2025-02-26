@@ -13,7 +13,7 @@ dependencies:
       - pytest==7.4.3
       - openai-whisper==20240930
       - torch==2.2.2
-      - numpy==2.0.2
+      - numpy==1.24.3
       - tiktoken==0.9.0
       - black==24.3.0
       - flake8==6.0.0

@@ -2,6 +2,7 @@ import pytest
 import time
 from src.ai.stt_engine import HybridSTTEngine
 from unittest.mock import Mock, patch
+import json
 
 
 @pytest.fixture
@@ -76,3 +77,52 @@ def test_engine_switch_cooldown(
         time.sleep(1.0)  # wait beyond cooldown
         engine._check_resources_and_switch()
         mock_cpu.assert_called()
+
+
+@patch("vosk.Model")
+@patch("vosk.KaldiRecognizer")
+def test_vosk_transcriber(mock_kaldi, mock_model):
+    """Test the standalone VoskTranscriber class works correctly."""
+    from src.ai.vosk_transcriber import VoskTranscriber
+
+    # Set up the mocks
+    mock_rec = mock_kaldi.return_value
+    mock_rec.AcceptWaveform.return_value = True
+    mock_rec.Result.return_value = '{"text": "test transcription"}'
+    mock_rec.FinalResult.return_value = '{"text": "final words"}'
+
+    # Create the transcriber
+    transcriber = VoskTranscriber()
+
+    # Test transcribe method with a complete segment
+    result = transcriber.transcribe(b"test audio")
+    mock_rec.AcceptWaveform.assert_called_with(b"test audio")
+    assert result == "test transcription"
+
+    # Test final_result method
+    final = transcriber.final_result()
+    assert final == "final words"
+
+    # Test transcribe with partial result
+    mock_rec.AcceptWaveform.return_value = False
+    mock_rec.PartialResult.return_value = '{"partial": "partial words"}'
+    result = transcriber.transcribe(b"more audio")
+    assert result == "partial words"
+
+
+def test_hybrid_stt_final_result(mock_vosk_model):
+    """Test the final_result method of HybridSTTEngine."""
+    from src.ai.stt_engine import HybridSTTEngine
+
+    # Create a hybrid engine with Vosk as the active engine
+    engine = HybridSTTEngine(force_engine="vosk")
+
+    # Set up expectations for FinalResult
+    engine.vosk_recognizer.FinalResult.return_value = json.dumps(
+        {"text": "final transcription"}
+    )
+
+    # Test the final_result method
+    result = engine.final_result()
+    assert result == "final transcription"
+    engine.vosk_recognizer.FinalResult.assert_called_once()

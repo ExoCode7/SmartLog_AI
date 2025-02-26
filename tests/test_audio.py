@@ -44,3 +44,34 @@ def test_audiocapturer_start_stop(mock_pyaudio):
     assert capturer._running is False
     mock_stream.stop_stream.assert_called_once()
     mock_stream.close.assert_called_once()
+
+
+@patch("pyaudio.PyAudio")
+def test_audiocapturer_compatibility_methods(mock_pyaudio):
+    """Test that the compatibility methods correctly call their counterparts"""
+    mock_stream = Mock()
+    mock_pyaudio.return_value.open.return_value = mock_stream
+
+    capturer = AudioCapturer()
+
+    # Test start_capture calls start
+    with patch.object(capturer, "start") as mock_start:
+        capturer.start_capture()
+        mock_start.assert_called_once()
+
+    # Test get_audio_data calls get_chunk
+    with patch.object(capturer, "get_chunk") as mock_get_chunk:
+        mock_get_chunk.return_value = b"test_data"
+        result = capturer.get_audio_data()
+        mock_get_chunk.assert_called_once()
+        assert result == b"test_data"
+
+    # Test stop_capture calls stop
+    with patch.object(capturer, "stop") as mock_stop:
+        capturer.stop_capture()
+        mock_stop.assert_called_once()
+
+    # Test close calls stop
+    with patch.object(capturer, "stop") as mock_stop:
+        capturer.close()
+        mock_stop.assert_called_once()

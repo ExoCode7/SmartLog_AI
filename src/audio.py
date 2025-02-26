@@ -4,6 +4,7 @@ import threading
 import queue
 import vosk
 import json
+import warnings
 
 
 class AudioCapture:
@@ -17,6 +18,11 @@ class AudioCapture:
         chunk_size: Number of frames per read.
         buffer_size: Number of chunks to queue.
         """
+        warnings.warn(
+            "AudioCapture is deprecated. Use AudioCapturer instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.logger = logging.getLogger(__name__)
         self.p = pyaudio.PyAudio()
         self.device_index = device_index
@@ -89,7 +95,9 @@ class AudioCapture:
 
 
 class VoskTranscriber:
-    def __init__(self, model_path="model", sample_rate=16000):
+    def __init__(
+        self, model_path="models/vosk-model-small-en-us-0.15", sample_rate=16000
+    ):
         """
         model_path: Path to the Vosk model folder.
         sample_rate: Must match your audio capture rate for accurate recognition.

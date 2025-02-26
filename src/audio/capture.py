@@ -8,7 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class AudioCapturer:
-    def __init__(self, rate=16000, chunk=1600, channels=1, buffer_duration=10):
+    def __init__(
+        self, rate=16000, chunk=1600, channels=1, buffer_duration=10, device_index=None
+    ):
         """Initializes the AudioCapturer with configurable parameters.
 
         Args:
@@ -16,11 +18,13 @@ class AudioCapturer:
             chunk: Frames per buffer. Default is 1600 (~100ms).
             channels: Number of audio channels. Default is 1.
             buffer_duration: Duration in seconds for ring buffer. Default is 10.
+            device_index: Optional index of audio input device (None = default).
         """
         self.rate = rate
         self.chunk = chunk
         self.channels = channels
         self.buffer_size = buffer_duration * self.rate
+        self.device_index = device_index
         self.p = pyaudio.PyAudio()
         self.stream = None
         self.buffer = RingBuffer(self.buffer_size)
@@ -34,6 +38,7 @@ class AudioCapturer:
             channels=self.channels,
             rate=self.rate,
             input=True,
+            input_device_index=self.device_index,
             frames_per_buffer=self.chunk,
             stream_callback=None,
         )
@@ -80,3 +85,23 @@ class AudioCapturer:
             self.stream.close()
         self.p.terminate()
         logger.info("Audio capture stopped.")
+
+    # Compatibility method for old AudioCapture class
+    def start_capture(self):
+        """Compatibility method for AudioCapture.start_capture()"""
+        return self.start()
+
+    # Compatibility method for old AudioCapture class
+    def get_audio_data(self):
+        """Compatibility method for AudioCapture.get_audio_data()"""
+        return self.get_chunk()
+
+    # Compatibility method for old AudioCapture class
+    def stop_capture(self):
+        """Compatibility method for AudioCapture.stop_capture()"""
+        return self.stop()
+
+    # Compatibility method for old AudioCapture class
+    def close(self):
+        """Compatibility method for AudioCapture.close()"""
+        return self.stop()
