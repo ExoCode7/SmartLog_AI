@@ -10,6 +10,7 @@ setup(
         "pyaudio==0.2.14",
         "rake-nltk==1.0.6",
         "psutil==5.9.5",
+        "spacy==3.7.2",
         # Add other pinned dependencies from requirements.txt as needed
     ],
 )

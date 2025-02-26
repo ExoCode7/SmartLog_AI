@@ -1,28 +1,39 @@
 import tkinter as tk
 from tkinter import scrolledtext, ttk
-from typing import List, Callable
+from typing import List, Dict, Callable, Optional, Any, Union
 
 
 class LiveTranscriptionUI:
     def __init__(
         self,
-        start_callback: Callable[[], None] = None,
-        stop_callback: Callable[[], None] = None,
+        start_callback: Optional[Callable[[], None]] = None,
+        stop_callback: Optional[Callable[[], None]] = None,
     ):
         self.root = tk.Tk()
         self.root.title("SmartLog AI")
         self.root.geometry("800x600")
 
-        self.start_callback = start_callback
-        self.stop_callback = stop_callback
+        self.start_callback: Optional[Callable[[], Any]] = start_callback
+        self.stop_callback: Optional[Callable[[], Any]] = stop_callback
 
         self.text_area = scrolledtext.ScrolledText(
             self.root, height=20, width=80, wrap=tk.WORD, state=tk.DISABLED
         )
         self.text_area.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
-        self.keyword_label = tk.Label(self.root, text="Keywords: ", font=("Arial", 12))
-        self.keyword_label.pack(padx=10, pady=5)
+        # Create frame for summary display
+        self.summary_frame = tk.Frame(self.root)
+        self.summary_frame.pack(padx=10, pady=5, fill=tk.X)
+
+        # Initialize summary category labels
+        self.summary_labels = {}
+
+        # Create the initial keyword label for backwards compatibility
+        self.keyword_label = tk.Label(
+            self.summary_frame, text="Keywords: ", font=("Arial", 12)
+        )
+        self.keyword_label.pack(padx=10, pady=5, anchor=tk.W)
+        self.summary_labels["keywords"] = self.keyword_label
 
         # Buttons for start/stop
         button_frame = tk.Frame(self.root)
@@ -52,11 +63,11 @@ class LiveTranscriptionUI:
 
         self.style_combo = ttk.Combobox(
             self.root,
-            values=["Keywords Only", "Short Summary", "Detailed Keywords"],
+            values=["Basic", "Detailed", "Comprehensive"],
             state="readonly",
         )
         self.style_combo.pack(padx=10, pady=2)
-        self.style_combo.set("Keywords Only")
+        self.style_combo.set("Basic")
 
     def on_start(self):
         if self.start_callback:
@@ -66,27 +77,41 @@ class LiveTranscriptionUI:
         if self.stop_callback:
             self.stop_callback()
 
-    def update_display(self, transcription: str, keywords: List[str]):
-        self.root.after(0, self._update_text_area, transcription)
-        self.root.after(0, self._update_keyword_label, keywords)
+    def update_display(
+        self, transcription: str, summary: Union[List[str], Dict[str, List[str]]]
+    ):
+        """Update the display with transcription and summary data."""
+        # Enable text area for editing
+        self.text_area.config(state=tk.NORMAL)
+        self.text_area.delete(1.0, tk.END)
+        self.text_area.insert(tk.END, transcription)
+        self.text_area.config(state=tk.DISABLED)
 
-    def _update_text_area(self, transcription: str):
-        try:
-            self.text_area.config(state=tk.NORMAL)
-            self.text_area.insert(tk.END, transcription + "\n")
-            self.text_area.see(tk.END)
-            self.text_area.config(state=tk.DISABLED)
-        except tk.TclError:
-            pass
+        # Handle both legacy list format and new dict format
+        if isinstance(summary, list):
+            # Legacy format - just keywords
+            self.keyword_label.config(text=f"Keywords: {', '.join(summary)}")
+        elif isinstance(summary, dict):
+            # New structured format - create or update labels for each category
+            for category, items in summary.items():
+                category_title = category.capitalize()
+                display_text = f"{category_title}: {', '.join(items)}"
 
-    def _update_keyword_label(self, keywords: List[str]):
-        try:
-            if keywords:
-                self.keyword_label.config(text="Keywords: " + ", ".join(keywords))
-            else:
-                self.keyword_label.config(text="Keywords: ")
-        except tk.TclError:
-            pass
+                # Create label if it doesn't exist
+                if category not in self.summary_labels:
+                    self.summary_labels[category] = tk.Label(
+                        self.summary_frame,
+                        text=display_text,
+                        font=("Arial", 12),
+                        anchor=tk.W,
+                        justify=tk.LEFT,
+                    )
+                    self.summary_labels[category].pack(
+                        padx=10, pady=2, anchor=tk.W, fill=tk.X
+                    )
+                else:
+                    # Update existing label
+                    self.summary_labels[category].config(text=display_text)
 
     def run(self):
         self.root.mainloop()

@@ -1,11 +1,13 @@
 import sys
 import traceback
 import logging
+import os
 from src.utils.logger import setup_logger
 from src.gui.ui_tk import LiveTranscriptionUI
 from src.audio.capture import AudioCapturer
 from src.ai.stt_engine import HybridSTTEngine
 from src.ai.summarization import KeywordEngine
+from src.ai.smart_summarizer import SpacySummarizer, SmartSummarizerAdapter
 
 
 # Configure a fallback logger in case setup_logger fails
@@ -25,16 +27,38 @@ def main():
         log = logging.getLogger("fallback")
         log.error(f"Failed to initialize custom logger: {e}. Using fallback.")
 
-    log.info("Starting SmartLog AI MVP (Phase 2/3)")
+    log.info("Starting SmartLog AI MVP (Phase 2.5 - Enhanced Summarization)")
 
-    # Updated model path from src/main_mvp.py
-    MODEL_PATH = "models/vosk-model-small-en-us-0.15"
+    # Get model path from environment or use default
+    MODEL_PATH = os.environ.get("VOSK_MODEL_PATH", "models/vosk-model-small-en-us-0.15")
     SAMPLE_RATE = 16000
 
     # Initialize components
     audio = AudioCapturer(rate=SAMPLE_RATE, chunk=1600)
     stt_engine = HybridSTTEngine(vosk_model_path=MODEL_PATH)
-    summarizer = KeywordEngine()
+
+    # Initialize the new SpacySummarizer and use it with the adapter
+    # for backward compatibility
+    try:
+        log.info("Initializing SpacySummarizer...")
+        spacy_summarizer = SpacySummarizer(max_items_per_category=5)
+
+        # For backward compatibility, wrap with adapter
+        # Set use_adapter to False to use the full structured summary
+        use_adapter = False
+
+        if use_adapter:
+            log.info("Using adapter for backward compatibility")
+            summarizer = SmartSummarizerAdapter(spacy_summarizer)
+        else:
+            log.info("Using full structured summarizer")
+            summarizer = spacy_summarizer
+    except Exception as e:
+        log.error(
+            f"Failed to initialize SpacySummarizer: {e}. "
+            f"Falling back to KeywordEngine."
+        )
+        summarizer = KeywordEngine()
 
     def start_capture():
         log.info("Starting audio capture")
@@ -60,12 +84,12 @@ def main():
         log.info("UI: Stop button clicked")
         original_on_stop()
 
-    def logged_update_display(transcription, keywords):
+    def logged_update_display(transcription, summary):
         log.debug(
             f"UI: Updating display with transcription: '{transcription}' "
-            f"and keywords: {keywords}"
+            f"and summary: {summary}"
         )
-        original_update_display(transcription, keywords)
+        original_update_display(transcription, summary)
 
     ui.on_start = logged_on_start
     ui.on_stop = logged_on_stop
@@ -80,8 +104,14 @@ def main():
 
             transcription = stt_engine.transcribe(audio_chunk)
             if transcription:
-                keywords = summarizer.extract_keywords(transcription)
-                ui.update_display(transcription, keywords)
+                # Process with the summarizer - works with both adapter
+                # and direct summarizer
+                if isinstance(summarizer, SmartSummarizerAdapter):
+                    keywords = summarizer.extract_keywords(transcription)
+                    ui.update_display(transcription, keywords)
+                else:
+                    summary = summarizer.summarize_conversation(transcription)
+                    ui.update_display(transcription, summary)
 
     except KeyboardInterrupt:
         log.info("Received KeyboardInterrupt, shutting down gracefully.")
@@ -96,8 +126,13 @@ def main():
         final_text = stt_engine.final_result()
         if final_text:
             log.info(f"Final transcription: {final_text}")
-            keywords = summarizer.extract_keywords(final_text)
-            ui.update_display(final_text, keywords)
+            # Process with the appropriate summarizer
+            if isinstance(summarizer, SmartSummarizerAdapter):
+                keywords = summarizer.extract_keywords(final_text)
+                ui.update_display(final_text, keywords)
+            else:
+                summary = summarizer.summarize_conversation(final_text)
+                ui.update_display(final_text, summary)
 
         log.info("Exiting main_mvp.")
         sys.exit(0)

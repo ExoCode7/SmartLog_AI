@@ -22,3 +22,5 @@ dependencies:
       - psutil==5.9.5
       - flake8-pyproject==1.2.3
       - pytest-mock==3.10.0
+      - spacy==3.7.2
+      - en-core-web-sm==3.7.0
