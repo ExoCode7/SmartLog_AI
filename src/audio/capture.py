@@ -31,7 +31,7 @@ class AudioCapturer:
         self._running = False
         self._capture_thread = None
 
-    def start(self):
+    def start(self) -> None:
         logger.info("Starting audio capture.")
         self.stream = self.p.open(
             format=pyaudio.paInt16,

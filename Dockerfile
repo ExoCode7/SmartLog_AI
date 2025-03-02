@@ -13,6 +13,11 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -
     rm miniconda.sh
 ENV PATH="/miniconda/bin:${PATH}"
 
+# Activate conda base environment when container starts
+SHELL ["/bin/bash", "-c"]
+RUN echo 'source /miniconda/etc/profile.d/conda.sh' >> ~/.bashrc && \
+    echo 'conda activate smartlog-ai-mvp' >> ~/.bashrc
+
 RUN conda env create -f conda.yml
 
 COPY . /app

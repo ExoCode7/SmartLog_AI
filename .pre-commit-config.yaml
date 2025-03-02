@@ -28,7 +28,7 @@ repos:
     hooks:
       - id: clear-everything
         name: Clear Everything
-        entry: ./scripts/clear_everything.sh
-        language: script
+        entry: bash -c "source ./scripts/clear_everything.sh"
+        language: system
         pass_filenames: false
         stages: [manual]

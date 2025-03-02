@@ -60,7 +60,7 @@ class PowerAwareScheduler:
     def _switch_to_low_power_mode(self):
         logger.info("Switching to low-power mode: forcing engine to Vosk.")
         # Force STT engine to Vosk
-        self.engine.unload_whisper()
+        self.engine._unload_whisper()
         self.engine.active_engine = "vosk"
 
     def _switch_to_normal_mode(self):

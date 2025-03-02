@@ -1,5 +1,5 @@
 import spacy
-from typing import List, Dict, Optional, Any, Union
+from typing import List, Dict, Any, Optional, Union
 import logging
 
 # Load the logger
@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 class ISummarizer:
     """Interface for text summarization engines."""
 
-    def summarize_conversation(self, text: str) -> Dict[str, List[str]]:
+    def summarize_conversation(
+        self, text: str
+    ) -> Union[Dict[str, List[str]], Dict[str, Any]]:
         """
         Summarize the given text and return structured results.
 
@@ -35,6 +37,21 @@ class ISummarizer:
         Returns:
             Modified summary based on user instructions
         """
+        if not instructions:
+            return summary
+
+        # Handle excluding topics if specified
+        if "exclude_topics" in instructions:
+            excluded = instructions["exclude_topics"]
+            return {
+                category: [
+                    item
+                    for item in items
+                    if not any(topic in item.lower() for topic in excluded)
+                ]
+                for category, items in summary.items()
+            }
+
         return summary
 
 
@@ -205,48 +222,54 @@ class SpacySummarizer(ISummarizer):
 
 # Create a backward compatible summarizer that works with the old interface
 class SmartSummarizerAdapter:
-    """Adapter to make the new summarizer compatible with the old interface."""
+    """
+    Adapter that wraps a SpacySummarizer to provide backward compatibility
+    with the KeywordEngine interface.
+    """
 
-    def __init__(self, summarizer: ISummarizer, default_category: str = "keywords"):
-        """
-        Initialize the adapter with a summarizer.
-
-        Args:
-            summarizer: An instance of ISummarizer
-            default_category: The category to use when interfacing with
-                              systems expecting the old keyword list format
-        """
+    def __init__(self, summarizer: ISummarizer):
+        """Initialize with a SpacySummarizer instance."""
         self.summarizer = summarizer
-        self.default_category = default_category
 
-    def extract_keywords(self, text: str) -> Union[List[str], Dict[str, List[str]]]:
+    def extract_keywords(self, text: str) -> List[str]:
         """
-        Extract keywords using the summarizer but return in the old format.
+        Extract keywords from text using the wrapped summarizer.
+
+        This method maintains compatibility with the KeywordEngine interface
+        while leveraging the more advanced SpacySummarizer backend.
+        """
+        result = self.summarizer.summarize_conversation(text)
+        return result.get("keywords", [])
+
+    def summarize(self, text: str) -> Dict[str, Any]:
+        """
+        Compatibility method with the old interface.
+        Returns just the keywords for backward compatibility.
+        """
+        result = self.summarizer.summarize_conversation(text)
+        return {"keywords": result.get("keywords", [])}
+
+    def apply_user_guidance(self, keywords, instructions):
+        """
+        Apply user-specific instructions to customize the keywords.
 
         Args:
-            text: The input text
+            keywords: The list of extracted keywords
+            instructions: User-provided guidance for customization
 
         Returns:
-            A list of keywords (compatible with the old interface)
+            Modified keywords based on user instructions
         """
-        summary = self.summarizer.summarize_conversation(text)
-        # Return the specified category as a flat list for backward compatibility
-        return summary.get(self.default_category, [])
+        if not instructions:
+            return keywords
 
-    def apply_user_guidance(
-        self, keywords: List[str], instructions: Optional[Dict[str, Any]] = None
-    ) -> List[str]:
-        """
-        Apply user guidance in a way compatible with the old interface.
+        # Handle excluding topics if specified
+        if "exclude_topics" in instructions:
+            excluded = instructions["exclude_topics"]
+            return [
+                keyword
+                for keyword in keywords
+                if not any(topic in keyword.lower() for topic in excluded)
+            ]
 
-        Args:
-            keywords: List of keywords
-            instructions: User instructions
-
-        Returns:
-            Modified list of keywords
-        """
-        # Convert to new format, apply guidance, then convert back
-        summary = {self.default_category: keywords}
-        modified = self.summarizer.apply_user_guidance(summary, instructions)
-        return modified.get(self.default_category, [])
+        return keywords

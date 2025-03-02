@@ -1,27 +1,68 @@
-import spacy
-from typing import List, Dict
+import logging
+from typing import List, Dict, Any
+
+logger = logging.getLogger(__name__)
 
 
-class SpacySummarizer:
+class KeywordEngine:
     """
-    A summarizer that uses spaCy to extract keywords and entities.
+    Simple keyword extraction engine for text summarization.
+    Provides a fallback when SpacySummarizer is unavailable.
     """
 
-    def __init__(self, max_items_per_category: int = 5):
-        self.nlp = spacy.load("en_core_web_sm")
-        self.max_items = max_items_per_category
+    def __init__(self):
+        logger.info("Initializing KeywordEngine")
+        # Common stop words to exclude
+        self.stop_words = {
+            "the",
+            "a",
+            "an",
+            "and",
+            "in",
+            "on",
+            "at",
+            "to",
+            "for",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "have",
+            "has",
+            "had",
+            "this",
+            "that",
+            "there",
+            "their",
+            "they",
+            "it",
+            "of",
+            "with",
+        }
 
-    def summarize_conversation(self, text: str) -> Dict[str, List[str]]:
-        """
-        Summarizes the conversation by extracting keywords and entities.
-        Args:
-            text: The conversation text.
-        Returns:
-            A dictionary with 'keywords' and 'entities'.
-        """
-        doc = self.nlp(text)
-        keywords = [
-            token.text for token in doc if token.is_alpha and not token.is_stop
-        ][: self.max_items]
-        entities = [ent.text for ent in doc.ents][: self.max_items]
-        return {"keywords": keywords, "entities": entities}
+    def extract_keywords(self, text: str, max_keywords: int = 5) -> List[str]:
+        """Extract keywords from text using basic frequency analysis."""
+        if not text:
+            return []
+
+        # Simple implementation - split by spaces and get most common words
+        words = [
+            word.lower()
+            for word in text.split()
+            if word.lower() not in self.stop_words and len(word) > 3
+        ]
+
+        # Count occurrences
+        word_count = {}
+        for word in words:
+            word_count[word] = word_count.get(word, 0) + 1
+
+        # Sort by frequency
+        sorted_words = sorted(word_count.items(), key=lambda x: x[1], reverse=True)
+        return [word for word, _ in sorted_words[:max_keywords]]
+
+    def summarize(self, text: str) -> Dict[str, Any]:
+        """Compatibility method with the ISummarizer interface."""
+        keywords = self.extract_keywords(text)
+        return {"keywords": keywords}
